@@ -137,15 +137,19 @@ def merge_markdown_batches(previous: str, current: str, *, min_overlap: int = 16
     
     # No valid overlap at end of previous text, append with separator
     if not valid_matches:
-        return "\n" + current
+        return previous + "\n" + current
     
     # Get the longest match at the end of previous text
     best_match = max(valid_matches, key=lambda m: m.size)
-    print("# Best match::: ", current[:best_match.b])
     
-    # Merge using the found overlap
-    # We take all of previous and append current starting after the overlap
-    return current[best_match.b + best_match.size:]
+    # Print the overlapping text for debugging
+    overlap_text = current[:best_match.b + best_match.size]
+    print(f"# Best match (size={best_match.size}, previous_pos={best_match.a}, current_pos={best_match.b}): {overlap_text}")
+    
+    # The correct merge is:
+    # 1. All of previous (which ends with the overlap)
+    # 2. The part of current after the overlap
+    return previous + current[best_match.b + best_match.size:]
 
 
 def is_special_markdown_line(line: str) -> bool:
@@ -351,3 +355,5 @@ async def convert_pdf_to_markdown(
             f.write(f"# Parsing made the batch ({start_page} - {end_page}) go: {len(copied)} -> {len(current_batch_markdown)}\n")
 
         previous_batch_markdown = current_batch_markdown
+        # TODO: add a post processing step to remove single bullet points and other patterns already adressed
+        # TODO: increase gemini output length

@@ -39,7 +39,7 @@ class GeminiModel(LLM):
                 print(f"Error extracting text from response: {e}")
             
             # If the response is empty, or there is an error, wait and try again
-            await asyncio.sleep(1.5**i)
+            await asyncio.sleep(1.8**i)
 
     def upload_file(self, file_path: str, *, file_name: str) -> File:
         return self.client.files.upload(file_path, config={"display_name": file_name})
